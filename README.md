@@ -2,14 +2,14 @@
 
 ## Why
 I am a fan of mod_php with Apache and not much into PHP-FPM, in this image 
-Nginx works as reverse proxy to an Apache instances which run a specific 
+Nginx works as reverse proxy to Apache instances which run a specific 
 version of PHP using mod_php.
 
 ## Purpose
-To host a single web-application with the desired  
-PHP version and to be able to change the PHP version from the 
-project (web project) document root via config file. 
-The configuration is generated automatically.
+To host a single web-application with the desired PHP version and to be 
+able to change the PHP version from the project (web project) document 
+root via config file. 
+The configuration for Nginx is generated automatically.
 
 ## Structure
 The image is based on Ubuntu 18.04 and runs Nginx on port 80 which works as 
@@ -18,7 +18,7 @@ revers proxy.
 PHP: 7.1, 7.2, 7.3.  
 Each apache instance operates mod_prefork and listens on 
 ports: 83, 84, 85 
-respectively, each of which uses a different mod_php.  
+respectively, each of which uses a different mod_php version.  
   
 A main directory which contains the web application is supposed to 
 be mounted to the container r/w to '/srv/' directory which is the 
@@ -69,7 +69,7 @@ Supervisor is not really *controlling* the processes, it just call the start
 Nginx using supervisor (to support auto reload, exit status monitoring, 
 signals, ...). The implementation of supervisor is simple.  
   
-#####Full command:
+##### Full command:
 `docker run -it -v $(pwd):/srv --hostname d1.mphp7s.loc -e PHP_VERSION=7.2 -p 80:80 idimsh-mphp7s:v1`  
   
 `-v $(pwd):/srv`: mounts current directory to document root (supposing 
@@ -83,7 +83,7 @@ In the mounted DocRoot to '/srv/', a file named: 'php-version' is read and
 the first line of it controls the PHP version, supported values: 7.1, 7.2, 7.3.  
   
 The existence of this file overrides the PHP version passed in environment 
-(`-e` param), more over: this file is constantly being monitored for changes
+(`-e` param), moreover: this file is constantly being monitored for changes
 using `incron` daemon from the container and any changes to it will cause
 the Nginx server to reload and serve the changed PHP version.  
 For this to work however, the file '/srv/php-version' should exists when 
