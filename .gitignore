@@ -1,0 +1,12 @@
+/.idea
+
+/files-from-container
+
+**/composer.lock
+vendor
+.deprecated
+.sitesmeta
+.tests
+.namp-sites-meta
+/*working-with-containers.txt
+/scripts/main-docroot/
