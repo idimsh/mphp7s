@@ -319,6 +319,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y --purge autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN for dir in $(/bin/ls -1d /etc/{apache*,php}); do find ${dir} -type d -print0 | xargs -0 chmod 755;  done
+
 ## This soecial for my mounts
 RUN groupadd --gid 999 vboxfs && usermod -aG 999 www-data
 
