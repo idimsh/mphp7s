@@ -1,44 +1,37 @@
-FROM idimsh/mphp7s:1.0
+FROM idimsh/mphp7s:1.1
 
 MAINTAINER Abdulrahman Dimashki <idimsh@gmail.com>
 
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-RUN apt-get update && apt-get install -y build-essential
+COPY config/apache2-main/envvars-common /etc/apache2/
+COPY config/apache2-php7.1/ /etc/apache2-php7.1/
+COPY config/apache2-php7.2/ /etc/apache2-php7.2/
+COPY config/apache2-php7.3/ /etc/apache2-php7.3/
+COPY config/apache2-common/sites-enabled/ /etc/apache2/sites-enabled/
+RUN chmod 644 /etc/apache2*/* /etc/apache2*/*/* && \
+    ln -sf /etc/apache2/sites-enabled/000-default.conf /etc/apache2-php7.1/sites-enabled/000-default.conf && \
+    ln -sf /etc/apache2/sites-enabled/000-default.conf /etc/apache2-php7.2/sites-enabled/000-default.conf && \
+    ln -sf /etc/apache2/sites-enabled/000-default.conf /etc/apache2-php7.3/sites-enabled/000-default.conf
 
-RUN mkdir /root/swoole-src && \
-    cd /root/swoole-src && \
-    git clone https://github.com/swoole/swoole-src.git .
+COPY scripts/server/apache-control.sh /opt/scripts/
+RUN chmod 755 /opt/scripts/apache-control.sh && \
+    for file in /opt/scripts/*; do ln -s $file /usr/local/bin/; done
 
 ############################
-## Php 7.1
+## Supervisord
 ############################
-RUN for php_ver in "7.1" "7.2" "7.3"; do \
-    apt-get install -y --no-install-recommends php${php_ver}-dev && \
-    update-alternatives --set phar /usr/bin/phar${php_ver} && \
-    update-alternatives --set phar.phar /usr/bin/phar.phar${php_ver} && \
-    update-alternatives --set php /usr/bin/php${php_ver} && \
-    update-alternatives --set php-config /usr/bin/php-config${php_ver} && \
-    update-alternatives --set phpize /usr/bin/phpize${php_ver} && \
-    cd /root/swoole-src && \
-    make clean; \
-    phpize && \
-    ./configure --enable-sockets --enable-openssl --enable-http2 --enable-swoole  --enable-mysqlnd && \
-    make && \
-    make install && \
-    strip /usr/lib/php/*/swoole.so && \
-    echo "extension=swoole.so" > /etc/php/${php_ver}/mods-available/swoole.ini && \
-    ln -s /etc/php/${php_ver}/mods-available/swoole.ini /etc/php/${php_ver}/cli/conf.d/ && \
-    ln -s /etc/php/${php_ver}/mods-available/swoole.ini /etc/php/${php_ver}/apache2/conf.d/; \
-    done
-
-RUN rm -rf /root/swoole-src
-
-RUN apt-get -y purge build-essential && apt-get -y --purge autoremove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY config/supervisor/supervisor.conf /etc/supervisor.conf
 
 EXPOSE 80
-ENV HOST_IN_LOG_NAME=0
+ENV PHP_VERSION=7.3
+
+## Set the document root directory as relative path to '/srv/' which is the Base Docroot.
+## This allows mounting Laravel project for example to '/srv/' and setting this DOCROOT
+## to 'public' or './public' or 'public/' to serve files from '/srv/public/'.
+## '.' means '/srv/'
+## Empty value is not supported due to Apcahe internal startup scripts. If we want to support
+## empty value, the start command must be a custom bash script which sets it to '.' before
+## calling supervisor, which is not intended to run the process ID 1 to be bash.
+ENV DOCROOT=.
 
 CMD ["supervisord", "-c", "/etc/supervisor.conf"]
 

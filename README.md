@@ -42,21 +42,19 @@ And they are all compiled using `pecl` when the image was created.
 and which runs the cli 'php' command.  
 Supported values: 7.1, 7.2, 7.3  
   
-`HOST_IN_LOG_NAME`: (default: "") Better to keep it empty, it is here from a 
-different image I built. In quick: If set to non empty will cause log 
-file names (for Apache, Nginx, PHP) to have the host name of the 
-container prepended to the default name.
+`DOCROOT`: (default: ".") Must me set, it is the relative path inside `'/srv/'`
+directory which will be the document root.
 
 ## Running:
 To run and auto start all services:  
-`docker run -it idimsh/mphp7s:1.1`  
+`docker run -it idimsh/mphp7s:1.2`  
   
 It will execute the default supervisor command which starts all services.  
 Pressing Ctrl+C in the running container will kill supervisor and 
 services running then terminate the container.  
   
 Or go to shell by  
-`docker run -it idimsh/mphp7s:1.1 /bin/bash`  
+`docker run -it idimsh/mphp7s:1.2 /bin/bash`  
   
 Then execute:  
 `run.sh`  
@@ -70,13 +68,13 @@ Nginx using supervisor (to support auto reload, exit status monitoring,
 signals, ...). The implementation of supervisor is simple.  
   
 ##### Full command:
-`docker run -it -v $(pwd):/srv --hostname d1.mphp7s.loc -e PHP_VERSION=7.2 -p 80:80 idimsh/mphp7s:1.1`  
+`docker run -it -v .:/srv --hostname d1.mphp7s.loc -e PHP_VERSION=7.2 -e DOCROOT=public -p 8080:80 idimsh/mphp7s:1.2`  
   
-`-v $(pwd):/srv`: mounts current directory to document root (supposing 
-your docker host is linux).  
+`-v .:/srv`: mounts current directory to base directory '/srv/' (which must be '/srv').  
 `--hostname d1.mphp7.loc`: Set host name of the container to a FQDN which reduces
 Apaches' startup warnings.  
 `-e PHP_VERSION=7.2`: Set PHP version to 7.2.  
+`-e DOCROOT=public`: Set the serving docroot to '/srv/public/', it is a relative directory.
   
 ## Controlling PHP version from PHP Project:  
 In the mounted DocRoot to '/srv/', a file named: 'php-version' is read and
@@ -92,4 +90,4 @@ the container is starting. (i.e: it is not monitored for creation).
 ## Building from Dockerfile:
 Build locally by cloning the repository  
 `git clone git@github.com:idimsh/mphp7s.git .`  
-`docker build -t "idimsh-mphp7s:1.1" .`
+`docker build -t "idimsh-mphp7s:1.2" .`
