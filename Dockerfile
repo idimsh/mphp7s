@@ -12,9 +12,7 @@ RUN chmod 644 /etc/apache2*/* /etc/apache2*/*/* && \
     ln -sf /etc/apache2/sites-enabled/000-default.conf /etc/apache2-php7.2/sites-enabled/000-default.conf && \
     ln -sf /etc/apache2/sites-enabled/000-default.conf /etc/apache2-php7.3/sites-enabled/000-default.conf
 
-COPY scripts/server/apache-control.sh /opt/scripts/
-RUN chmod 755 /opt/scripts/apache-control.sh && \
-    for file in /opt/scripts/*; do ln -s $file /usr/local/bin/; done
+RUN for file in /opt/scripts/*; do ln -s $file /usr/local/bin/; done
 
 ############################
 ## Supervisord
