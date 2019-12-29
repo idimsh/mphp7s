@@ -4,23 +4,30 @@
  * setup an Nginx default server proxy template.
  * Used for docker container created by Abdulrahman Dimashki <idimsh@gmail.com>
  */
-define( 'PHP_VERSION', '7.3' );
+define( 'DEFAULT_PHP_VERSION', '7.4' );
 
 function print_e( ...$input ) {
   fwrite( STDERR, implode( ' ', $input ) . "\n" );
 }
 
-$php_version = getenv( 'PHP_VERSION' );
+$versions = explode( " ", file( __DIR__ . '/php-versions.txt' )[0] );
 
-if ( ! in_array( $php_version, $php_versions = [ '7.1', '7.2', '7.3' ] ) ) {
-  $php_version = PHP_VERSION;
-  print_e( "PHP version does not match or not given, set to: {$php_version}" );
+$PHP_VERSION = getenv( 'PHP_VERSION' );
+$LOG_TO_SRV  = getenv( 'LOG_TO_SRV' );
+
+if ( ! in_array( $PHP_VERSION, $versions ) ) {
+  $PHP_VERSION = DEFAULT_PHP_VERSION;
+  print_e( "PHP version does not match or not given, set to: {$PHP_VERSION}" );
 }
 
 $dest_extra_files = [
   'default_server_proxy' => [
     'template' => '/etc/nginx/default_server.proxy.template',
     'dest'     => '/etc/nginx/default_server.proxy',
+  ],
+  'default_server_conf' => [
+    'template' => '/etc/nginx/default_server.conf.template',
+    'dest'     => '/etc/nginx/default_server.conf',
   ],
 ];
 
@@ -41,6 +48,11 @@ foreach ( $dest_extra_files as $files_array ) {
  * User Include Files:
  * /etc/nginx/default_server.proxy.template
  * /etc/nginx/default_server.proxy
+ *
+ *
+ * Variables in default_server_conf templates:
+ * {if-LOG_TO_SRV}: block
+ * {if-not-LOG_TO_SRV}: block
  */
 
 /**
@@ -79,13 +91,17 @@ function preg_replace_conditional( $condition, $start_string, $end_string, $inpu
  * @return mixed|null|string|string[]
  */
 function replace_templates( $input_string ) {
-  global $php_version;
+  global $PHP_VERSION, $LOG_TO_SRV;
 
   $output = str_replace( "\r", "", $input_string );
 
-  $output = preg_replace_conditional( $php_version == '7.1', '{if-php-7.1}', '{/if-php-7.1}', $output );
-  $output = preg_replace_conditional( $php_version == '7.2', '{if-php-7.2}', '{/if-php-7.2}', $output );
-  $output = preg_replace_conditional( $php_version == '7.3', '{if-php-7.3}', '{/if-php-7.3}', $output );
+  $output = preg_replace_conditional( $PHP_VERSION == '7.1', '{if-php-7.1}', '{/if-php-7.1}', $output );
+  $output = preg_replace_conditional( $PHP_VERSION == '7.2', '{if-php-7.2}', '{/if-php-7.2}', $output );
+  $output = preg_replace_conditional( $PHP_VERSION == '7.3', '{if-php-7.3}', '{/if-php-7.3}', $output );
+  $output = preg_replace_conditional( $PHP_VERSION == '7.4', '{if-php-7.4}', '{/if-php-7.4}', $output );
+
+  $output = preg_replace_conditional( !empty($LOG_TO_SRV), '{if-LOG_TO_SRV}', '{/if-LOG_TO_SRV}', $output );
+  $output = preg_replace_conditional( empty($LOG_TO_SRV), '{if-not-LOG_TO_SRV}', '{/if-not-LOG_TO_SRV}', $output );
 
   return $output;
 }

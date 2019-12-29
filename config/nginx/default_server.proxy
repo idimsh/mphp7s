@@ -2,4 +2,4 @@
 # Editing this file manually might break the System
 
 include /etc/nginx/proxy_params;
-proxy_pass http://backend73;
+proxy_pass http://backend74;
