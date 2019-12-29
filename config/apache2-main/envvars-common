@@ -12,8 +12,38 @@ export APACHE_RUN_GROUP=www-data
 export APACHE_PID_FILE=/var/run/apache2/apache2$SUFFIX.pid
 export APACHE_RUN_DIR=/var/run/apache2$SUFFIX
 export APACHE_LOCK_DIR=/var/lock/apache2$SUFFIX
-# Only /var/log/apache2 is handled by /etc/logrotate.d/apache2.
-export APACHE_LOG_DIR=/var/log/apache2$SUFFIX
+
+## This file will be sourced two times when APACHE starts, one time the environment variables will be set,
+## the second time they will be unset.
+## Here we will save the first value in files and retrieve it later.
+apache_log_dir_cache_file=/var/run/log_dir_cache_apache$SUFFIX
+php_log_dir_cache_file=/var/run/log_dir_cache_php$SUFFIX
+
+if [ -f $apache_log_dir_cache_file ]; then
+  export APACHE_LOG_DIR=$(cat $apache_log_dir_cache_file)
+else
+  export APACHE_LOG_DIR=/var/log/apache2$SUFFIX
+  if [ -n "$LOG_TO_SRV" ] && [ "$LOG_TO_SRV" != "0" ]; then
+    export APACHE_LOG_DIR=/srv/system/log/apache2$SUFFIX
+  fi
+  echo -n ${APACHE_LOG_DIR} > $apache_log_dir_cache_file
+fi
+mkdir -p ${APACHE_LOG_DIR} && \
+      chown -R ${APACHE_RUN_USER} ${APACHE_LOG_DIR}
+
+
+if [ -f $php_log_dir_cache_file ]; then
+  export PHP_LOG_DIR=$(cat $php_log_dir_cache_file)
+else
+  export PHP_LOG_DIR=/var/log/php
+  if [ -n "$LOG_TO_SRV" ] && [ "$LOG_TO_SRV" != "0" ]; then
+    export PHP_LOG_DIR=/srv/system/log/php
+  fi
+  echo -n ${PHP_LOG_DIR} > $php_log_dir_cache_file
+fi
+mkdir -p ${PHP_LOG_DIR} && \
+    chown -R ${APACHE_RUN_USER} ${PHP_LOG_DIR}
+
 
 ## The locale used by some modules like mod_dav
 export LANG=C
@@ -29,3 +59,7 @@ if [ -n "$DOCROOT" ]; then
   sed -i "s#\${DOCROOT}#$DOCROOT#g" /etc/apache2/sites-enabled/000-default.conf
 fi
 
+if [ -n "$PHP_LOG_DIR" ]; then
+  export PHP_LOG_DIR="${PHP_LOG_DIR}"
+  sed -i "s#\${PHP_LOG_DIR}#$PHP_LOG_DIR#g" /etc/apache2-php*/apache2.conf
+fi

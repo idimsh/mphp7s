@@ -1,0 +1,14 @@
+# envvars - default environment variables for apache2ctl
+export APACHE_HTTP_PORT=86
+
+# this won't be correct after changing uid
+unset HOME
+
+# for supporting multiple apache2 instances
+if [ "${APACHE_CONFDIR##/etc/apache2-}" != "${APACHE_CONFDIR}" ] ; then
+	SUFFIX="-${APACHE_CONFDIR##/etc/apache2-}"
+else
+	SUFFIX=
+fi
+
+. /etc/apache2/envvars-common

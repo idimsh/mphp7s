@@ -11,3 +11,4 @@ vendor
 /*working-with-containers.txt
 /scripts/main-docroot/
 /scripts/server/apache-control.sh
+/Dockerfile-*

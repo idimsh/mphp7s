@@ -11,3 +11,6 @@ proxy_pass http://backend72;
 {if-php-7.3}
 proxy_pass http://backend73;
 {/if-php-7.3}
+{if-php-7.4}
+proxy_pass http://backend74;
+{/if-php-7.4}
