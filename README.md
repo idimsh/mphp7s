@@ -1,5 +1,10 @@
 # MPHP7 Single (Multi PHP - Single Site) Docker Image on mod_php
 
+![Total Downloads](https://img.shields.io/docker/pulls/idimsh/mphp7s?style=square)
+![MicroBadger Layers](https://img.shields.io/microbadger/layers/idimsh/mphp7s/latest)
+![MicroBadger Image Size](https://img.shields.io/microbadger/image-size/idimsh/mphp7s/latest)
+
+
 ## Why
 I am a fan of mod_php with Apache and not much into PHP-FPM, in this image 
 Nginx works as reverse proxy to Apache instances which run a specific 
@@ -135,4 +140,6 @@ services:
           - my-web
           - my-web.loc
 ```
+
+
 
