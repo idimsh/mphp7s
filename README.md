@@ -56,14 +56,14 @@ Further tests on permissions need to be conducted on Linux docker hosts.
 
 ## Running:
 To run and auto start all services:  
-`docker run -it idimsh/mphp7s:1.3`  
+`docker run -it idimsh/mphp7s:latest`  
   
 It will execute the default supervisor command which starts all services.  
 Pressing Ctrl+C in the running container will kill supervisor and 
 services running then terminate the container.  
   
 Or go to shell by  
-`docker run -it idimsh/mphp7s:1.3 /bin/bash`  
+`docker run -it idimsh/mphp7s:latest /bin/bash`  
   
 Then execute:  
 `run.sh`  
@@ -77,7 +77,7 @@ Nginx using supervisor (to support auto reload, exit status monitoring,
 signals, ...). The implementation of supervisor is simple.  
   
 ##### Full command:
-`docker run --rm -it -v .:/srv --hostname d1.mphp7s.loc -e PHP_VERSION=7.2 -e DOCROOT=public -e LOG_TO_SRV=1 -p 8080:80 idimsh/mphp7s:1.3`  
+`docker run --rm -it -v .:/srv --hostname d1.mphp7s.loc -e PHP_VERSION=7.2 -e DOCROOT=public -e LOG_TO_SRV=1 -p 8080:80 idimsh/mphp7s:latest`  
   
 `-v .:/srv`: mounts current directory to base directory '/srv/' (which must be '/srv').  
 `--hostname d1.mphp7.loc`: Set host name of the container to a FQDN which reduces Apaches' startup warnings.  
@@ -101,13 +101,13 @@ Build locally by cloning the repository
 ```bash
 git clone git@github.com:idimsh/mphp7s.git .
 cd mphp7s
-docker build -t "idimsh-mphp7s:1.3" .
+docker build -t "idimsh-mphp7s:latest" .
 ```  
 This will build the image with all extra PHP extensions (the default ones) which are: `xdebug inotify ev apcu memcached mongodb igbinary redis swoole`  
   
 To build with custom extensions:
 ```bash
-docker build -t "idimsh-mphp7s:1.3" --build-arg BUILD_EXTENSIONS="apcu" .
+docker build -t "idimsh-mphp7s:latest" --build-arg BUILD_EXTENSIONS="apcu" .
 ```  
 This will build only with `acpu` extension
 
@@ -117,7 +117,7 @@ Here is an example of docker-compose.yaml
 version: '3.5'
 services:
   my-web:
-    image: idimsh/mphp7s:1.3
+    image: idimsh/mphp7s:latest
     container_name: my-web
     hostname: my-web.loc
     args:                                                                      
