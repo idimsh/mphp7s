@@ -1,8 +1,8 @@
 # MPHP7 Single (Multi PHP - Single Site) Docker Image on mod_php
 
-![Total Downloads](https://img.shields.io/docker/pulls/idimsh/mphp7s?style=square)
-![MicroBadger Layers](https://img.shields.io/microbadger/layers/idimsh/mphp7s/latest)
-![MicroBadger Image Size](https://img.shields.io/microbadger/image-size/idimsh/mphp7s/latest)
+[![Total Downloads](https://img.shields.io/docker/pulls/idimsh/mphp7s?style=square)](https://hub.docker.com/repository/docker/idimsh/mphp7s)
+[![MicroBadger Layers](https://img.shields.io/microbadger/layers/idimsh/mphp7s/latest)](https://hub.docker.com/repository/docker/idimsh/mphp7s)
+[![MicroBadger Image Size](https://img.shields.io/microbadger/image-size/idimsh/mphp7s/latest)](https://hub.docker.com/repository/docker/idimsh/mphp7s)
 
 
 ## Why
