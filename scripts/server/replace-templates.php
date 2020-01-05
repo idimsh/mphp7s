@@ -14,6 +14,7 @@ $versions = explode( " ", file( __DIR__ . '/php-versions.txt' )[0] );
 
 $PHP_VERSION = getenv( 'PHP_VERSION' );
 $LOG_TO_SRV  = getenv( 'LOG_TO_SRV' );
+$DOCROOT     = getenv( 'DOCROOT' );
 
 if ( ! in_array( $PHP_VERSION, $versions ) ) {
   $PHP_VERSION = DEFAULT_PHP_VERSION;
@@ -25,7 +26,7 @@ $dest_extra_files = [
     'template' => '/etc/nginx/default_server.proxy.template',
     'dest'     => '/etc/nginx/default_server.proxy',
   ],
-  'default_server_conf' => [
+  'default_server_conf'  => [
     'template' => '/etc/nginx/default_server.conf.template',
     'dest'     => '/etc/nginx/default_server.conf',
   ],
@@ -91,7 +92,7 @@ function preg_replace_conditional( $condition, $start_string, $end_string, $inpu
  * @return mixed|null|string|string[]
  */
 function replace_templates( $input_string ) {
-  global $PHP_VERSION, $LOG_TO_SRV;
+  global $PHP_VERSION, $LOG_TO_SRV, $DOCROOT;
 
   $output = str_replace( "\r", "", $input_string );
 
@@ -100,8 +101,10 @@ function replace_templates( $input_string ) {
   $output = preg_replace_conditional( $PHP_VERSION == '7.3', '{if-php-7.3}', '{/if-php-7.3}', $output );
   $output = preg_replace_conditional( $PHP_VERSION == '7.4', '{if-php-7.4}', '{/if-php-7.4}', $output );
 
-  $output = preg_replace_conditional( !empty($LOG_TO_SRV), '{if-LOG_TO_SRV}', '{/if-LOG_TO_SRV}', $output );
-  $output = preg_replace_conditional( empty($LOG_TO_SRV), '{if-not-LOG_TO_SRV}', '{/if-not-LOG_TO_SRV}', $output );
+  $output = preg_replace_conditional( ! empty( $LOG_TO_SRV ), '{if-LOG_TO_SRV}', '{/if-LOG_TO_SRV}', $output );
+  $output = preg_replace_conditional( empty( $LOG_TO_SRV ), '{if-not-LOG_TO_SRV}', '{/if-not-LOG_TO_SRV}', $output );
+
+  $output = str_replace( '${DOCROOT}', $DOCROOT, $output );
 
   return $output;
 }

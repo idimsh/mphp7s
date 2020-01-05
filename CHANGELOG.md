@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project Do NOT adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4] - 2020-01-05
+### Changed
+- Fixed Nginx config and docroot path  
+  
 
-## [1.3] - 2019-05-30
+## [1.3] - 2019-12-25
 ### Added
 - PHP version 7.4
 - Ability to write log files to mounted working directory instead of /var/log/
