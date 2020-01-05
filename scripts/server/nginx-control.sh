@@ -9,6 +9,8 @@ $SCRIPT_DIR/replace-templates.php
 if [ -n "$LOG_TO_SRV" ] && [ "$LOG_TO_SRV" != "0" ]; then
   mkdir -p /srv/system/log/nginx/
   chown root:adm /srv/system/log/nginx/
+  chmod -R 777 /srv/system/
+  chmod -R 777 /srv/system/log/nginx/
   touch /srv/system/log/nginx/access.log /srv/system/log/nginx/error.log
   chown www-data /srv/system/log/nginx/*
 fi

@@ -29,7 +29,8 @@ else
   echo -n ${APACHE_LOG_DIR} > $apache_log_dir_cache_file
 fi
 mkdir -p ${APACHE_LOG_DIR} && \
-      chown -R ${APACHE_RUN_USER} ${APACHE_LOG_DIR}
+      chown -R ${APACHE_RUN_USER} ${APACHE_LOG_DIR} && \
+      chmod -R 777 ${APACHE_LOG_DIR}
 
 
 if [ -f $php_log_dir_cache_file ]; then
@@ -42,7 +43,8 @@ else
   echo -n ${PHP_LOG_DIR} > $php_log_dir_cache_file
 fi
 mkdir -p ${PHP_LOG_DIR} && \
-    chown -R ${APACHE_RUN_USER} ${PHP_LOG_DIR}
+    chown -R ${APACHE_RUN_USER} ${PHP_LOG_DIR} && \
+    chmod -R 777 ${PHP_LOG_DIR}
 
 
 ## The locale used by some modules like mod_dav
